@@ -30,4 +30,4 @@ server.use(catchAllHandler)
 
 console.log(listEndpoints(server))
 
-server.listen(port, ()=> console.log("Server is runnning on port: " + port))
+server.listen(port, ()=> console.log("Server is running on port: " + port))
