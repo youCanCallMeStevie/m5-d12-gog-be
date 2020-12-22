@@ -29,7 +29,7 @@ router.post("/:id", async(req,res,next) =>{
         if (!game){ // if !found => 404
             const error = new Error("Cannot find game " + req.params.id)
             error.httpStatusCode = 404
-            next(error)
+            return next(error)
         }
         // if found => add it to cart.json
         const currentCart = await readFile(cartFilePath)
@@ -37,7 +37,7 @@ router.post("/:id", async(req,res,next) =>{
         if (gameAlreadyInCart){
             const error = new Error("Game already in the cart!")
             error.httpStatusCode = 400
-            next(error)
+            return next(error)
         }
 
         await writeFile([...currentCart, game])
@@ -60,13 +60,11 @@ router.delete("/:id", async(req, res,next)=>{
     if (remainingElements.length === currentCart.length){ // if !found => 404
         const error = new Error("Cannot find game " + req.params.id)
         error.httpStatusCode = 404
-        next(error)
+        return next(error)
     }
     // write it back
     await writeFile(remainingElements)
     res.send(200)
 })
-
-
 
 module.exports = router
