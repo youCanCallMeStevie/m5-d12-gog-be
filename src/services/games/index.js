@@ -56,22 +56,25 @@ router.post("/", cloudMulter.single("cover"), async (req, res, next) =>{
 // EDIT a game
 router.put("/:id", async (req, res, next) => {
     try{
-        const fullList = await readFile()
-        const remainingList = fullList.filter(game => game.id !== req.params.id)
-        const toUpdate = fullList.find(game => game.id === req.params.id)
-        if (!toUpdate){
+        const fullList = await readFile() // getting the full list
+        const remainingList = fullList.filter(game => game.id !== req.params.id) // we exlude from the list the element we want to update
+        const toUpdate = fullList.find(game => game.id === req.params.id) // we take the element we want to update
+        if (!toUpdate){ // if the element does not exist => 404
             const error = new Error("Cannot find element " + req.params.id)
             error.httpStatusCode = 404
             next(error)
         }
 
-        delete req.body.id
-        await writeFile([
-            ...remainingList,
+        delete req.body.id // for security reason, we don't want the user to be able to modify games ID
+        const updatedGame =
             {
-                ...toUpdate,
+                ...toUpdate, // followed by the previous element stitched with the properties we have in the body
                 ...req.body
             }
+            
+        await writeFile([ // write down the elements without the one we are updating
+            ...remainingList, 
+            updatedGame
         ])
 
         res.send(req.params.id)
